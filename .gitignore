@@ -1,0 +1,6 @@
+# Vs Code
+.vscode
+
+# Go files
+go.sum
+__debug_bin
