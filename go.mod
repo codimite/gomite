@@ -1,3 +1,3 @@
-module codimite.com/gomite
+module github.com/codimite.com/gomite
 
 go 1.16
