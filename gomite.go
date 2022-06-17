@@ -19,7 +19,6 @@ type GomiteHandlerFunc http.HandlerFunc
 type Handler http.Handler
 
 var Templates *template.Template
-var server *http.ServeMux
 
 var templateDirs = []string{"templates", "templates/partials"}
 
