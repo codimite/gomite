@@ -89,3 +89,7 @@ func HeaderCheckHandler(rw http.ResponseWriter, req *http.Request) {
 	return
 }
 ```
+### Change read timeout to 20 seconds
+```go
+gm.Start(WithReadTimeout(20 * time.Second))
+```
