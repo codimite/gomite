@@ -15,6 +15,38 @@ type Gomite struct {
 	Handler http.Handler
 }
 
+type Opts struct {
+	Addr           string
+	Handler        http.Handler
+	ReadTimeout    time.Duration
+	WriteTimeout   time.Duration
+	MaxHeaderBytes int
+}
+
+type OptFunc func(*Opts)
+
+func defaultOpts(server Gomite) Opts {
+	return Opts{
+		Addr:           ":" + server.Port,
+		Handler:        server.Handler,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+}
+
+func WithReadTimeout(t time.Duration) OptFunc {
+	return func(opts *Opts) {
+		opts.ReadTimeout = t
+	}
+}
+
+func WithWriteTimeout(t time.Duration) OptFunc {
+	return func(opts *Opts) {
+		opts.WriteTimeout = t
+	}
+}
+
 type GomiteHandlerFunc http.HandlerFunc
 type Handler http.Handler
 
@@ -47,13 +79,17 @@ func InitTemplates(tempDirs []string) {
 	Templates, _ = getTemplates(tempDirs)
 }
 
-func (server Gomite) Start() {
+func (server Gomite) Start(opts ...OptFunc) {
+	o := defaultOpts(server)
+	for _, fn := range opts {
+		fn(&o) // changing default options
+	}
 	s := &http.Server{
-		Addr:           ":" + server.Port,
-		Handler:        server.Handler,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 1 << 20,
+		Addr:           o.Addr,
+		Handler:        o.Handler,
+		ReadTimeout:    o.ReadTimeout,
+		WriteTimeout:   o.WriteTimeout,
+		MaxHeaderBytes: o.MaxHeaderBytes,
 	}
 	log.Fatal(s.ListenAndServe())
 }
